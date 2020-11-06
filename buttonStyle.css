@@ -1,21 +1,115 @@
+.displayStyle{
+	width : 62.5%;
+	height : 100%;
+	font-size: 72px;
+	border: medium solid #4E7AFD;
+	text-align: right;
+	margin: 0 auto;
+	color : white;
+	background-color: #0947FF;
+}
+
+.numButton4{
+	width: 12.5%;
+	height: 200%;
+	font-size: 24px;
+	background-color: #38FD51;
+	border: medium solid #01DE1B;
+	transform: translate(150%, 0%);
+	padding: 10px 16px;
+}
 .numButton3{
-	background-color: #00eaa1;
-	border: 2px solid #000000;	
-	padding: 10px 16px;
-}
-.numButton2{
-	background-color: #00eaa1;
-	border: 2px solid #000000;
-	transform: translate(-300%, 100%);
-	padding: 10px 16px;
-}
-.numButton1{
-	background-color: #00eaa1;
-	border: 2px solid #000000;
-	transform: translate(-600%, 200%);
+	width: 12.5%;
+	height: 200%;
+	font-size: 24px;
+	background-color: #38FD51;
+	border: medium solid #01DE1B;
+	transform: translate(-250%, 100%);
 	padding: 10px 16px;
 }
 
-Button{
-	
+.numButton2{
+	width: 12.5%;
+	height: 200%;
+	font-size: 24px;
+	background-color: #38FD51;
+	border: medium solid #01DE1B;
+	transform: translate(150%, 100%);
+	padding: 10px 16px;
+}
+.numButton1{
+	width: 12.5%;
+	height: 200%;
+	font-size: 24px;
+	background-color: #38FD51;
+	border: medium solid #01DE1B;
+	transform: translate(-250%, 200%);
+	padding: 10px 16px;
+}
+
+.numButtonO{
+	width: 12.5%;
+	height: 200%;
+	font-size: 24px;
+	background-color: #38FD51;
+	border: medium solid #01DE1B;
+	transform: translate(150%, -1%);
+	padding: 10px 16px;
+}
+.equalsButton{
+	width: 12.5%;
+	height: 270px;
+	font-size: 24px;
+	background-color: #38FD51;
+	border: medium solid #01DE1B;
+	transform: translate(150%, -40%);
+	padding: 10px 16px;
+}
+
+.numButton4:active{
+	background-color: #01DE1B;
+	color: white;
+	border: medium solid #FFFFFF;	
+	padding: 10px 16px;
+}
+.numButton3:active{
+	background-color: #01DE1B;
+	color: white;
+	border: medium solid #FFFFFF;	
+	padding: 10px 16px;
+}
+.numButton6:active{
+	background-color: #01DE1B;
+	color: white;
+	border: medium solid #FFFFFF;	
+	padding: 10px 16px;
+}
+.numButton2:active{
+	background-color: #01DE1B;
+	color: white;
+	border: medium solid #FFFFFF;	
+	padding: 10px 16px;
+}
+.numButton1:active{
+	background-color: #01DE1B;
+	color: white;
+	border: medium solid #FFFFFF;	
+	padding: 10px 16px;
+}
+.numButtonO:active{
+	background-color: #01DE1B;
+	color: white;
+	border: medium solid#FFFFFF;	
+	padding: 10px 16px;
+}
+.equalsButton:active{
+	background-color: #01DE1B;
+	color: white;
+	border: medium solid#FFFFFF;	
+	padding: 10px 16px;
+}
+
+
+body{
+	background-color: #001657;
 }
