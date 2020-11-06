@@ -1,0 +1,21 @@
+.numButton3{
+	background-color: #00eaa1;
+	border: 2px solid #000000;	
+	padding: 10px 16px;
+}
+.numButton2{
+	background-color: #00eaa1;
+	border: 2px solid #000000;
+	transform: translate(-300%, 100%);
+	padding: 10px 16px;
+}
+.numButton1{
+	background-color: #00eaa1;
+	border: 2px solid #000000;
+	transform: translate(-600%, 200%);
+	padding: 10px 16px;
+}
+
+Button{
+	
+}
