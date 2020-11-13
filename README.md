@@ -1,11 +1,11 @@
 # Calculator
 Calculator Project
 
-Possible Languages"
-Javascript, C#, (look into rust)
+Written in Javascript:
 
-Schedule:
-	By 11/12:  fdslfioe
-	By 11/19:
-	By 11/26:
-	By 12/3:
+https://aggie.io/vwj36akdcc
+
+Whats left:
+	lexical analyzer
+	expression parser
+	expression evaluator
