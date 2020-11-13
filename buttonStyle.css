@@ -53,16 +53,26 @@
 	font-size: 24px;
 	background-color: #38FD51;
 	border: medium solid #01DE1B;
-	transform: translate(150%, -1%);
+	transform: translate(150%, 123%);
 	padding: 10px 16px;
 }
 .equalsButton{
 	width: 12.5%;
-	height: 270px;
+	height: 135px;
 	font-size: 24px;
 	background-color: #38FD51;
 	border: medium solid #01DE1B;
-	transform: translate(150%, -40%);
+	transform: translate(150%, 20%);
+	padding: 10px 16px;
+}
+
+.clearButton{
+	width: 12.5%;
+	height: 135px;
+	font-size: 24px;
+	background-color: #38FD51;
+	border: medium solid #01DE1B;
+	transform: translate(50%, -80%);
 	padding: 10px 16px;
 }
 
@@ -103,6 +113,12 @@
 	padding: 10px 16px;
 }
 .equalsButton:active{
+	background-color: #01DE1B;
+	color: white;
+	border: medium solid#FFFFFF;	
+	padding: 10px 16px;
+}
+.clearButton:active{
 	background-color: #01DE1B;
 	color: white;
 	border: medium solid#FFFFFF;	
