@@ -1,0 +1,15 @@
+when thers r pen   l pen 
+
+numbers
+operations
+symbols
+whitespace
+
+
+when num we can      append sybol(wspecail case add mult and make it priority) , skip ws, accept opperators  Reject num
+wher ws skip
+where operations (accept num, syb,                                                        reJECT operations
+if symbol         accept symb (as mult)  operaters                                                   reject num
+
+paranthsis paring (depth)
+	every paren creats substirng and if it deosnt l par throw error
