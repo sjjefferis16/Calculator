@@ -58,12 +58,23 @@ while (c < i) {
 		
     switch(str[c]){
 
-		//find if num before
-		//NUMBER  idk if int here works.. rollign on 
-       case int: case '.': while (str[c].isNum()) {
+		//keep doing this till end of number (frameworks)
+		case '0': 		
+		case '1': 
+		case '2':
+		case '3': 
+		case '4':
+		case '5':
+		case '6': 
+		case '7': 
+		case '8': 
+		case '9':
+        case '.':// while (str[c].isNum()) 
+	   {
 
             switch (str[c]) {  //next c //if nan or ws exit this 
-                case '.': if (perBool == true) { throw "NaN error: multiple '.'s." } perBool = true;
+				case '.': if (perBool == true) { throw console.error("NaN error: multiple '.'s." ); }
+						  perBool = true;
                           myNumStr.append('.'); break;
                 case '1': myNumStr.append('1'); break;
                 case '2': myNumStr.append('2'); break;
@@ -76,14 +87,19 @@ while (c < i) {
                 case '9': myNumStr.append('9'); break;
                 case '0': myNumStr.append('0'); break;
                 default:
+					if(!perBool){
+						appendNumber(stringToInt(myNumStr));
+						myNumStr = "";
+					}
+					else{
+						appendNumber(stringToFloat(myNumStr));
+						myNumStr = "";
+					  }
                     break;//to get out of thing (if this was no hte last it would qork with the rest, by asdding the number to the lexigram)
 
             }
             c++;
 		
-		//finally it appends numberOBJ(stringToFloat(myNumStr)); to the structure
-		appendNumber(stringToFloat(myNumStr));
-		//myNumStr = "";
 		}
 		//symbol
         case 'e': appendSymbolE(); break;
@@ -100,7 +116,7 @@ while (c < i) {
 		case '(': appendParenR(); break;
 		case ')': appendParenL(); break;
 	}
-			c++;
+	c++;
     
 //new num added to lex and other stuff is skipped
 
