@@ -26,6 +26,59 @@ document.getElementById("clear").addEventListener("click", function(){ clearFun(
 
 function calcFun(){
 	// parser goes here
+	// takes in a string an then analysises it and spits out errors if it doesn check out
+function analysises(str) {
+    i = str.length;
+    c = 0;
+
+while (c < i) {
+        //read in c(string pos)
+
+        //find if num before
+        mynumstr;        
+        perbool = false;
+        while (str[c].isNum()) {
+
+            switch (str[c]) {  //next c //if nan or ws exit this 
+                case '.': if (perbool == true) { throw "NaN error: multiple '.'s." } perbool = true;
+                    mynumstr.append('.'); break;
+                case '1': mynumstr.append('1'); break;
+                case '2': mynumstr.append('2'); break;
+                case '3': mynumstr.append('3'); break;
+                case '4': mynumstr.append('4'); break;
+                case '5': mynumstr.append('5'); break;
+                case '6': mynumstr.append('6'); break;
+                case '7': mynumstr.append('7'); break;
+                case '8': mynumstr.append('8'); break;
+                case '9': mynumstr.append('9'); break;
+                case '0': mynumstr.append('0'); break;
+                default:
+                    break;
+
+            }
+            c++;
+
+        }
+        
+    
+//new num added to lex and other stuff is skipped
+
+// is op/ws/sybmbol
+ else if (str.hasNextchar()) {
+            ' '
+        }
+        if operation match case
+
+        if symbol  if p get next i
+
+ //eiter π or e
+ else if e then good.c
+ else end
+        //turn to add to string(append)
+    }
+}
+
+}
 
 }
 
