@@ -175,6 +175,46 @@ function errorLog() {
 
 /**********************Expression Parser*************/
 
+
+expr (prev_precedence=-1):
+ lhs <- term()
+ while (true){
+ op <- nextLexeme(); // ensure that it’s an operator
+ curr_precedence <- precedence(op)
+ if (curr_precedence < prev_precedence){
+ break;
+ }
+ if (association(op) == left_to_right){
+ rhs <- expr(curr_precedence + 1);
+ }
+ else{
+	rhs <- expr(curr_precedence);
+	lhs = ExpressionNode (lhs, op, rhs);
+ }
+}
+ return lhs;
+term():
+ val <- nextLexeme()
+ if (val is NUMBER){
+ return NumberNode (val.value);
+ }
+ else if (val is PI){
+ return NumberNode (3.141592653589793238462643383279502884197169399375105820974944592307816406286);
+ }
+ else if (val is E){
+ return NumberNode (2.7182818284590452353602874713527);
+ }
+ else if (val is LPAREN){
+ node ß expr();
+ assert (nextLexeme() is RPAREN);
+ return node;
+ }
+ else{
+	// return -0;
+	 // failure – expected number but got something else
+ }
+ 
+*/
 /**********************End Expression Parser*************/
 
 /**********************Expression Evaluator*************/
@@ -184,8 +224,8 @@ Evalutates the parser tree to return the answer.
 /*
 function evaluate(node) {
 	if (node is ExpressionNode) { //node type is exprsion node.
-		lhs < - evaluate(node.lhs);
-		rhs < - evaluate(node.rhs);
+		lhs = evaluate(node.lhs);
+		rhs = evaluate(node.rhs);
 		return
 		lhs(node.op) rhs;
 	}
