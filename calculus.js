@@ -113,6 +113,9 @@ function appendLexemes(name, val){
 
 	//If an operator or paren is added, add the preceeding number and reset the appropriate values
 	if(val == "O" || val == "P"){
+		if(val == "O" && exp[c-1] == "("){
+			invalid = true;
+		}
 		if(!hasDecimal){
 		appendLexemes("NUMBER", parseInt(myNumStr));
 		}
