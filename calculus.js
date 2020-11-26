@@ -47,6 +47,7 @@ function LexicalAnalyzer(str) {
 	parenStack = 0;
 	//checks to see whether or not the previous value is valid
 	prevVal = 0;
+	preName = "";
 
 	while (c < i) {
 		
@@ -107,7 +108,7 @@ function LexicalAnalyzer(str) {
 
 function appendLexemes(name, val){
 	//check for double opperations, and fail
-	if(val == prevVal && (prevVal == "O" || prevVal == "P") ){
+	if(val == prevVal && (prevVal == "O" ) ){
 		invalid = true;
 	}
 
@@ -116,14 +117,16 @@ function appendLexemes(name, val){
 		if(val == "O" && exp[c-1] == "("){
 			invalid = true;
 		}
-		if(!hasDecimal){
-		appendLexemes("NUMBER", parseInt(myNumStr));
+		if(myNumStr != ""){
+			if(!hasDecimal){
+			appendLexemes("NUMBER", parseInt(myNumStr));
+			}
+			else{
+			appendLexemes("NUMBER", parseFloat(myNumStr));
+			}
+			myNumStr = "";
+			hasDecimal = false;
 		}
-		else{
-		appendLexemes("NUMBER", parseFloat(myNumStr));
-		}
-		myNumStr = "";
-		hasDecimal = false;
 	}
 	
 	//match l r parens,
@@ -133,6 +136,13 @@ function appendLexemes(name, val){
 
 	if(name == "RPAREN"){
 		parenStack -= 1;
+		if(preName == "LPAREN"){
+			invalid = true;
+		}
+	}
+
+	if(parenStack < 0){
+		invalid = true;
 	}
 
 	//Create an object that has a tag and describes the object, adding it to the list
@@ -143,6 +153,7 @@ function appendLexemes(name, val){
 	lexemes.push(lexObject);
 
 	prevVal = val;
+	preName = name;
 
 }
 
