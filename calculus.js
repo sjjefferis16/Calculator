@@ -1,5 +1,6 @@
 var exp = "";
 var ans = 0.0
+var lexemes = [];
 
 document.getElementById("(").addEventListener("click", function(){ appendFun("(") });
 document.getElementById(")").addEventListener("click", function(){ appendFun(")") });
@@ -25,114 +26,143 @@ document.getElementById("=").addEventListener("click", function(){ calcFun()});
 document.getElementById("clear").addEventListener("click", function(){ clearFun()});
 
 function calcFun(){
-	// parser goes here
-	// takes in a string an then analysises it and spits out errors if it doesn check out
+	LexicalAnalyzer(exp);
+	console.log(lexemes);
 
-/*
-Takes in a stirng *it's fuckign RAW*.
-looks at each char to turn into a object, if it's a number then it isolates it. 
-/ mini
-->gets next thing. makes it a object, appends it, and moves on. 
--> checks whole contrsturct for lexical correctness
+	if(lexemes != []){
+		// parser goes here
+	}
+}
 
-objects: 
-L paren
-R paren
-symbol
-number
-operation
-
-theese are appened then string like to an array or stream(>>what do stieams so)
-
-//for futher specs insert lexems into array at start of the lexem, then shrink array by removing all white space..(helper funct by javascript)
-
-*/
-function analysises(str) {
+/****************BEGIN LEXICAL ANALYSIS********/
+function LexicalAnalyzer(str) {
     i = str.length;
     c = 0;
 
-	myNumStr;        
-	perBool = false;
-while (c < i) {
-		//read in c(string pos)
+	myNumStr = "";        
+	hasDecimal = false;
+	invalid = false;
+
+	//Keeps track of whether the parenthesis are balanced
+	parenStack = 0;
+	//checks to see whether or not the previous value is valid
+	prevVal = 0;
+
+	while (c < i) {
 		
-    switch(str[c]){
+		switch(str[c]){
 
-		//keep doing this till end of number (frameworks)
-		case '0': 		
-		case '1': 
-		case '2':
-		case '3': 
-		case '4':
-		case '5':
-		case '6': 
-		case '7': 
-		case '8': 
-		case '9':
-        case '.':// while (str[c].isNum()) 
-	   {
+			//keep doing this till end of number (frameworks)
+			case '1': myNumStr += '1'; break;
+		    case '2': myNumStr += '2'; break;
+		    case '3': myNumStr += '3'; break;
+		    case '4': myNumStr += '4'; break;
+		    case '5': myNumStr += '5'; break;
+		    case '6': myNumStr += '6'; break;
+		    case '7': myNumStr += '7'; break;
+		    case '8': myNumStr += '8'; break;
+		    case '9': myNumStr += '9'; break;
+		    case '0': myNumStr += '0'; break;
+		    case '.': 
+		    	myNumStr += '.'; 
+		    	if (hasDecimal === true) { 
+		    		invalid = true 
+		    	}
+			  	hasDecimal = true;
+		    break;
+			   
+			//symbol
+		    case 'e': appendLexemes("E", "S"); break;
+			case 'π': appendLexemes("PI", "S"); break;
 
-            switch (str[c]) {  //next c //if nan or ws exit this 
-				case '.': if (perBool == true) { throw console.error("NaN error: multiple '.'s." ); }
-						  perBool = true;
-                          myNumStr.append('.'); break;
-                case '1': myNumStr.append('1'); break;
-                case '2': myNumStr.append('2'); break;
-                case '3': myNumStr.append('3'); break;
-                case '4': myNumStr.append('4'); break;
-                case '5': myNumStr.append('5'); break;
-                case '6': myNumStr.append('6'); break;
-                case '7': myNumStr.append('7'); break;
-                case '8': myNumStr.append('8'); break;
-                case '9': myNumStr.append('9'); break;
-                case '0': myNumStr.append('0'); break;
-                default:
-					if(!perBool){
-						appendNumber(stringToInt(myNumStr));
-						myNumStr = "";
-					}
-					else{
-						appendNumber(stringToFloat(myNumStr));
-						myNumStr = "";
-					  }
-                    break;//to get out of thing (if this was no hte last it would qork with the rest, by asdding the number to the lexigram)
-
-            }
-            c++;
-		
+			//Operations
+			case '^': appendLexemes("POWER", "O"); break;
+			case '/': appendLexemes("DIVIDES", "O"); break;
+			case '*': appendLexemes("TIMES", "O"); break;
+			case '+': appendLexemes("PLUS", "O"); break;
+			case '-': appendLexemes("MINUS", "O"); break;	
+			//PARENS
+			case '(': appendLexemes("LPAREN", "P"); break;
+			case ')': appendLexemes("RPAREN", "P"); break;
 		}
-		//symbol
-        case 'e': appendSymbolE(); break;
-		case 'π': appendSymbolPi(); break;
-
-		//Operations
-		case '^': appendOperatorPower(); break;
-		case '/': appendOperatorDiv(); break;
-		case '*': appendOperatorTimes(); break;
-		case '+': appendOperatorPlus(); break;
-		case '-': appendOperatorMinus(); break;
-	
-		//PARENS
-		case '(': appendParenR(); break;
-		case ')': appendParenL(); break;
-	}
 	c++;
-    
-//new num added to lex and other stuff is skipped
+   }
+
+   	//checks if num there. if so add to end 
+	if(myNumStr != ""){
+		if(!hasDecimal){
+		appendLexemes("NUMBER", parseInt(myNumStr));
+		}
+		else{
+		appendLexemes("NUMBER", parseFloat(myNumStr));
+		}
+		myNumStr = "";
+		hasDecimal = false;
+	}
+
+	errorLog();
 
 }
 
 
-//checks if num there. sif so add to end ?? >>extra.
+function appendLexemes(name, val){
+	//check for double opperations, and fail
+	if(val == prevVal && (prevVal == "O" || prevVal == "P") ){
+		invalid = true;
+	}
+
+	//If an operator or paren is added, add the preceeding number and reset the appropriate values
+	if(val == "O" || val == "P"){
+		if(!hasDecimal){
+		appendLexemes("NUMBER", parseInt(myNumStr));
+		}
+		else{
+		appendLexemes("NUMBER", parseFloat(myNumStr));
+		}
+		myNumStr = "";
+		hasDecimal = false;
+	}
+	
+	//match l r parens,
+	if(name == "LPAREN"){
+		parenStack += 1;
+	}
+
+	if(name == "RPAREN"){
+		parenStack -= 1;
+	}
+
+	//Create an object that has a tag and describes the object, adding it to the list
+	let lexObject = {
+		"name" : name,
+		"val" : val
+	}
+	lexemes.push(lexObject);
+
+	prevVal = val;
+
 }
-//match l r parens, basicly )( , (().  should fail but ( ) pass   also if we shall allow for haning ()
+
+//match l r parens,
 //check for double opperations, and fail
-//operation and ) should fail but oper and ( is ok
+function errorLog(){
+	if(parenStack != 0){
+		invalid = true;
+	}
 
+	if(invalid){
+	clearFun();
+	document.getElementById("display").innerHTML = "Syntax ERROR";
+	}
 }
+
+
+/**********************END LEXICAL ANALYSIS*************/
+
 function clearFun(){
 	exp = "";
 	ans = 0.0
+	lexemes = [];
 	document.getElementById("display").innerHTML = "|";
 	console.log(exp);
 }
