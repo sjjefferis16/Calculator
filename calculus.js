@@ -30,8 +30,10 @@ function calcFun() {
 	console.log(lexemes);
 
 	if (lexemes != []) {
-		// parser goes here
+		return;
 	}
+	
+	ExpressionParser();
 }
 
 /****************BEGIN LEXICAL ANALYSIS********/
@@ -175,7 +177,35 @@ function errorLog() {
 
 /**********************Expression Parser*************/
 
+function ExpressionParser(){
+	class ExpressionNode{
+		constructor(lhs, rhs, operator){
+			this.lhs = lhs
+			this.rhs = rhs
+			this.operator = operator
+		}
+	}
 
+	class NumberNode{
+		constructor(val){
+			this.val = val;
+		}
+	}
+
+	for (var i = 0; 0 < lexemes.length - 1; i++) {
+		loclex = lexemes[i]
+
+		switch(loclex.name){
+			case "NUMBER":
+				
+		}
+
+	}
+
+
+}
+
+/*
 expr (prev_precedence=-1):
  lhs <- term()
  while (true){
@@ -213,21 +243,20 @@ term():
 	// return -0;
 	 // failure – expected number but got something else
  }
- 
-*/
+ */
+
 /**********************End Expression Parser*************/
 
 /**********************Expression Evaluator*************/
-/*
-Evalutates the parser tree to return the answer.
-*/
+
+/*Evalutates the parser tree to return the answer.*/
+
 /*
 function evaluate(node) {
-	if (node is ExpressionNode) { //node type is exprsion node.
+	if (nodeisExpressionNode) { //node type is exprsion node.
 		lhs = evaluate(node.lhs);
 		rhs = evaluate(node.rhs);
-		return
-		lhs(node.op) rhs;
+		return lhs(node.op) rhs;
 	}
  else {
 		return node.value;
