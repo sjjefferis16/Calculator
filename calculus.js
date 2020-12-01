@@ -192,11 +192,22 @@ function ExpressionParser(){
 		}
 	}
 
+	prevSymbol = "";
+	numNode = new NumberNode(0);
+	mainTree = new ExpressionNode(null, null, null);
 	for (var i = 0; 0 < lexemes.length - 1; i++) {
 		loclex = lexemes[i]
 
 		switch(loclex.name){
-			case "NUMBER":
+			case "PLUS":
+				prevSymbol = "PLUS";
+				updateTree()
+			case "MINUS":
+			case "TIMES":
+			case "DIVIDES":
+			case "POWER":
+			default:
+				numNode = new NumberNode(loclex.val);
 				
 		}
 
@@ -205,6 +216,13 @@ function ExpressionParser(){
 
 }
 
+function updateTree(){
+	mainTree.operator
+}
+
+function precedence(rootOperator, nextOperator){
+	ro
+}
 /*
 expr (prev_precedence=-1):
  lhs <- term()
