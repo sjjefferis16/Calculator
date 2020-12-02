@@ -203,9 +203,17 @@ function ExpressionParser(){
 				prevSymbol = "PLUS";
 				updateTree()
 			case "MINUS":
+				prevSymbol = "MINUS";
+				updateTree()
 			case "TIMES":
+				prevSymbol = "TIMES";
+				updateTree()
 			case "DIVIDES":
+				prevSymbol = "DIVIDES";
+				updateTree()
 			case "POWER":
+				prevSymbol = "POWER";
+				updateTree()
 			default:
 				numNode = new NumberNode(loclex.val);
 				
