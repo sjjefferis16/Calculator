@@ -216,6 +216,7 @@ function ExpressionParser(){
 				updateTree()
 			default:
 				numNode = new NumberNode(loclex.val);
+				//update tree?
 				
 		}
 
@@ -225,11 +226,13 @@ function ExpressionParser(){
 }
 
 function updateTree(){
-	mainTree.operator
+	//hmn hmnmmmmmnnnn
+	mainTree.operator = prevSymbol;
 }
 
 function precedence(rootOperator, nextOperator){
-	ro
+	//maybe operators should have values.
+	rootOperator
 }
 /*
 expr (prev_precedence=-1):
