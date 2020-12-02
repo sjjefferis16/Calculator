@@ -197,7 +197,7 @@ function ExpressionParser(){
 	mainTree = new ExpressionNode(null, null, null);
 	for (var i = 0; 0 < lexemes.length - 1; i++) {
 		loclex = lexemes[i]
-
+		//Expr or term; see notes of psudocode
 		switch(loclex.name){
 			case "PLUS":
 				prevSymbol = "PLUS";
