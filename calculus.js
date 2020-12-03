@@ -192,28 +192,33 @@ function ExpressionParser(){
 		}
 	}
 
+	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. precVal will be used to determine where we add expressions.
 	prevSymbol = "";
 	numNode = new NumberNode(0);
 	mainTree = new ExpressionNode(null, null, null);
+	precVal = 0;
+
+	//go through the lexemes
 	for (var i = 0; 0 < lexemes.length - 1; i++) {
 		loclex = lexemes[i]
-		//Expr or term; see notes of psudocode
+		
+		//we're only adding one number at a time, so store it as an unmatch number node by default if its not an opperator.
 		switch(loclex.name){
 			case "PLUS":
+				updateTree("PLUS");
 				prevSymbol = "PLUS";
-				updateTree()
 			case "MINUS":
+				updateTree("MINUS");
 				prevSymbol = "MINUS";
-				updateTree()
 			case "TIMES":
+				updateTree("TIMES");
 				prevSymbol = "TIMES";
-				updateTree()
 			case "DIVIDES":
+				updateTree("DIVIDES");
 				prevSymbol = "DIVIDES";
-				updateTree()
 			case "POWER":
+				updateTree("POWER");
 				prevSymbol = "POWER";
-				updateTree()
 			default:
 				numNode = new NumberNode(loclex.val);
 				//update tree?
@@ -225,14 +230,26 @@ function ExpressionParser(){
 
 }
 
-function updateTree(){
-	//hmn hmnmmmmmnnnn
+//update the tree based on precedence
+function updateTree(operator){
+	precVal = precedence(mainTree.operator, operator);
+	if(precVal >= 0){
+
+	} else {
+
+	}
 	mainTree.operator = prevSymbol;
 }
 
 function precedence(rootOperator, nextOperator){
-	//maybe operators should have values.
-	rootOperator
+	r = precedenceValFun(rootOperator);
+	n = precedenceValFun(nextOperator);
+	v = r - n;
+	return v;
+}
+
+function precedenceValFun(operator){
+
 }
 /*
 expr (prev_precedence=-1):
