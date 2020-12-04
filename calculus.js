@@ -29,7 +29,7 @@ function calcFun() {
 	LexicalAnalyzer(exp);
 	console.log(lexemes);
 
-	if (lexemes != []) {
+	if (lexemes == []) {
 		return;
 	}
 	
@@ -195,13 +195,14 @@ function ExpressionParser(){
 	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. 
 	//precVal will be used to determine where we add expressions.
 	prevSymbol = "";
-	numNode = new NumberNode(0);
-	mainTree = new ExpressionNode(null, null, null);
+	var numNode = new NumberNode(0);
+	var mainTree = new ExpressionNode(0, 0, 0);
 	precVal = 0;
 
 	//go through the lexemes
-	for (var i = 0; 0 < lexemes.length - 1; i++) {
-		loclex = lexemes[i]
+	for (var i = 0; i < lexemes.length ; i++) {
+		var loclex = lexemes[i];
+		console.log(loclex.name);
 		
 		//we're only adding one number at a time, so store it as an unmatch number node by default if its not an opperator.
 		switch(loclex.name){
@@ -220,7 +221,7 @@ function ExpressionParser(){
 			case "POWER":
 				updateTree("POWER");
 				prevSymbol = "POWER";
-			default:
+			case "NUMBER":
 				numNode = new NumberNode(loclex.val);
 				//update tree? -ki
 				
@@ -229,35 +230,67 @@ function ExpressionParser(){
 	}
 
 
-}
+	//to put the last number on, travel down the tree to the final null node
+	var rnode = mainTree.rhs;
 
-//update the tree based on precedence, 			adding nodes to it.?  numb nodes?
+	if(rnode == 0){
+		mainTree.rhs = numNode;
+	} else {
+		while(rnode.rhs != 0){
+			rnode = rnode.rhs;
+		}
+		rnode.rhs = numNode;
+	}
 
-//associativity shoudl come into play here  could check if oper is power manually?
+
+	console.log(mainTree);
+
+//get precedence, then add to tree
+//also, this function is inside the expression parser function so that it can access maintree
+//and numnode as local variables.
 function updateTree(operator){
 	precVal = precedence(mainTree.operator, operator);
+	if(precVal == 100){
+		mainTree.lhs = numNode;
+		mainTree.operator = operator;
+	}
+	else{
+		if(precVal < 0){
+
+			//mainTree = new ExpressionNode(numNode, mainTree, operator);
+		} else {
+
+		}
+	}
+	/*
 	if(precVal >= 0){
 		//top node operator should become the * or / to evalute later
-		mainTree.lhs = ExperesionNode(NumberNode, null, operator);
+		mainTree.lhs = ExpressionNode(numNode, null, operator);
 	} else { //evaluate sooner so make it the parent with the number on rhs
-		var = mainTree;
+		//var = mainTree;
 		if(operator == "POWER"){
-			mainTree = ExpresionNode(NumberNode, var, operator);  //?? lh Associativity
+			mainTree = ExpressionNode(numNode, null, operator);  //?? lh Associativity
 		}
 		else{
-			mainTree = ExpresionNode(var, NumberNode, operator); 
+			mainTree = ExpressionNode(null, numNode, operator); 
 		}
 		//mainTree.rhs = ExpresionNode(var, NumberNode , operator);
 		//or maybe good old tree.add(nodecreation )
 	}
-	mainTree.operator = prevSymbol;
+	mainTree.operator = prevSymbol;*/
+	return mainTree;
 }
 
 function precedence(rootOperator, nextOperator){
 	r = precedenceValFun(rootOperator);
 	n = precedenceValFun(nextOperator);
 	v = r - n;
+	if(rootOperator == 0){
+		return 100;
+	}
+	else{
 	return v;
+	}
 }
 
 function precedenceValFun(operator){
@@ -274,6 +307,13 @@ function precedenceValFun(operator){
 	return ret;
 
 }
+
+}
+
+//update the tree based on precedence, 			adding nodes to it.?  numb nodes?
+
+//associativity shoudl come into play here  could check if oper is power manually?
+
 /*
 expr (prev_precedence=-1):
  lhs <- term()
@@ -325,7 +365,7 @@ function evaluate(node) {
 	if (node.isExpressionNode()) { //node type is exprsion node.
 		lhs = evaluate(node.lhs);
 		rhs = evaluate(node.rhs);
-		return lhs node.operator() rhs;//this would be like 3 + 2  not sure about substitution here
+		//return lhs node.operator() rhs;//this would be like 3 + 2  not sure about substitution here
 	}
  else {
 		return node.value;
