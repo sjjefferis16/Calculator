@@ -225,7 +225,6 @@ function ExpressionParser(){
 				//update tree? -ki
 				
 		}
-		updateTree();
 
 	}
 
@@ -233,14 +232,22 @@ function ExpressionParser(){
 }
 
 //update the tree based on precedence, 			adding nodes to it.?  numb nodes?
+
+//associativity shoudl come into play here  could check if oper is power manually?
 function updateTree(operator){
 	precVal = precedence(mainTree.operator, operator);
 	if(precVal >= 0){
 		//top node operator should become the * or / to evalute later
-		mainTree.lhs = operator;
+		mainTree.lhs = ExperesionNode(NumberNode, null, operator);
 	} else { //evaluate sooner so make it the parent with the number on rhs
-		var = mainTree.rhs;
-		mainTree.rhs = ExpresionNode(var,/*lhs to be added here in func? or no*/ , operator);
+		var = mainTree;
+		if(operator == "POWER"){
+			mainTree = ExpresionNode(NumberNode, var, operator);  //?? lh Associativity
+		}
+		else{
+			mainTree = ExpresionNode(var, NumberNode, operator); 
+		}
+		//mainTree.rhs = ExpresionNode(var, NumberNode , operator);
 		//or maybe good old tree.add(nodecreation )
 	}
 	mainTree.operator = prevSymbol;
