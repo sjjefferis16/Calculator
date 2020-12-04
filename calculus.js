@@ -192,7 +192,8 @@ function ExpressionParser(){
 		}
 	}
 
-	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. precVal will be used to determine where we add expressions.
+	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. 
+	//precVal will be used to determine where we add expressions.
 	prevSymbol = "";
 	numNode = new NumberNode(0);
 	mainTree = new ExpressionNode(null, null, null);
@@ -205,7 +206,7 @@ function ExpressionParser(){
 		//we're only adding one number at a time, so store it as an unmatch number node by default if its not an opperator.
 		switch(loclex.name){
 			case "PLUS":
-				updateTree("PLUS");
+				updateTree("PLUS");  //maybe +  ect
 				prevSymbol = "PLUS";
 			case "MINUS":
 				updateTree("MINUS");
@@ -221,22 +222,26 @@ function ExpressionParser(){
 				prevSymbol = "POWER";
 			default:
 				numNode = new NumberNode(loclex.val);
-				//update tree?
+				//update tree? -ki
 				
 		}
+		updateTree();
 
 	}
 
 
 }
 
-//update the tree based on precedence
+//update the tree based on precedence, 			adding nodes to it.?  numb nodes?
 function updateTree(operator){
 	precVal = precedence(mainTree.operator, operator);
 	if(precVal >= 0){
-
-	} else {
-
+		//top node operator should become the * or / to evalute later
+		mainTree.lhs = operator;
+	} else { //evaluate sooner so make it the parent with the number on rhs
+		var = mainTree.rhs;
+		mainTree.rhs = ExpresionNode(var,/*lhs to be added here in func? or no*/ , operator);
+		//or maybe good old tree.add(nodecreation )
 	}
 	mainTree.operator = prevSymbol;
 }
@@ -249,6 +254,17 @@ function precedence(rootOperator, nextOperator){
 }
 
 function precedenceValFun(operator){
+	ret = 0;
+	switch(operator){
+	case "PLUS": 
+	case "MINUS": ret = 0; break;
+
+	case "DIVIDES": 
+	case "TIMES": ret = 1; break;
+
+	case "POWER": ret = 2; break;   //right associrativity? 
+	}
+	return ret;
 
 }
 /*
@@ -297,18 +313,18 @@ term():
 
 /*Evalutates the parser tree to return the answer.*/
 
-/*
+
 function evaluate(node) {
-	if (nodeisExpressionNode) { //node type is exprsion node.
+	if (node.isExpressionNode()) { //node type is exprsion node.
 		lhs = evaluate(node.lhs);
 		rhs = evaluate(node.rhs);
-		return lhs(node.op) rhs;
+		return lhs node.operator() rhs;//this would be like 3 + 2  not sure about substitution here
 	}
  else {
 		return node.value;
 	}
 }
-*/
+
 /**********************End Expression Evaluator*************/
 function clearFun() {
 	exp = "";
