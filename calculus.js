@@ -199,7 +199,7 @@ function ExpressionParser(){
 	var mainTree = new ExpressionNode(0, 0, 0);
 	precVal = 0;
 
-	//go through the lexemes
+	//go through the lexemes assigning values and operators
 	for (var i = 0; i < lexemes.length ; i++) {
 		var loclex = lexemes[i];
 		console.log(loclex.name);
@@ -223,7 +223,11 @@ function ExpressionParser(){
 				prevSymbol = "POWER";
 			case "NUMBER":
 				numNode = new NumberNode(loclex.val);
-				//update tree? -ki
+			case "PI": 
+				numNode = new NumberNode (3.141592653589793238462643383279502884197169399375105820974944592307816406286);
+			case "E": 
+				numNode = new NumberNode (2.7182818284590452353602874713527);
+				
 				
 		}
 
@@ -255,11 +259,16 @@ function updateTree(operator){
 		mainTree.operator = operator;
 	}
 	else{
-		if(precVal < 0){
-
+		if(precVal < 0){//not sure what to do but lower on the tree (main - new op)
+			mainTree.lhs = operator;
+			operator.rhs = numNode;
 			//mainTree = new ExpressionNode(numNode, mainTree, operator);
-		} else {
-
+		} else {//as above but on uper on the tree
+			old = mainTree;
+			mainTree.operator = operator;
+			mainTree.rhs = old;
+			//hnmmn??\/
+			mainTree.lhs = numNode;
 		}
 	}
 	/*
@@ -302,7 +311,7 @@ function precedenceValFun(operator){
 	case "DIVIDES": 
 	case "TIMES": ret = 1; break;
 
-	case "POWER": ret = 2; break;   //right associrativity? 
+	case "POWER": ret = 2; break;   //+right associrativity
 	}
 	return ret;
 
@@ -366,6 +375,17 @@ function evaluate(node) {
 		lhs = evaluate(node.lhs);
 		rhs = evaluate(node.rhs);
 		//return lhs node.operator() rhs;//this would be like 3 + 2  not sure about substitution here
+
+		//needs final lhs operator rhs(so it will work for anytype)
+		switch(operator){
+		case "PLUS": return lhs + rhs;
+		case "MINUS": return lhs - rhs;
+	
+		case "DIVIDES": return lhs / rhs; //ints maybe weird here 
+		case "TIMES": return lhs * rhs;
+	
+		case "POWER": return lhs ^ rhs;   //+right associrativity goos?
+		}
 	}
  else {
 		return node.value;
