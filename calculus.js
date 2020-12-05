@@ -49,6 +49,7 @@ function calcFun() {
 	
 	var mt = ExpressionParser();
 	var ans = evaluate(mt);
+	console.log(ans);
 }
 
 /****************BEGIN LEXICAL ANALYSIS********/
@@ -197,7 +198,7 @@ function ExpressionParser(){
 
 	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. 
 	//precVal will be used to determine where we add expressions.
-	prevSymbol = "";
+	prevSymbol = "", curSymbol = "";
 	var numNode = new NumberNode(0);
 	var mainTree = new ExpressionNode(0, 0, 0);
 	precVal = true;
@@ -212,25 +213,32 @@ function ExpressionParser(){
 			case "PLUS":
 				updateTree("PLUS");  //maybe +  ect
 				prevSymbol = "PLUS";
+				break;
 			case "MINUS":
 				updateTree("MINUS");
 				prevSymbol = "MINUS";
+				break;
 			case "TIMES":
 				updateTree("TIMES");
 				prevSymbol = "TIMES";
+				break;
 			case "DIVIDES":
 				updateTree("DIVIDES");
 				prevSymbol = "DIVIDES";
+				break;
 			case "POWER":
 				updateTree("POWER");
 				prevSymbol = "POWER";
+				break;
 			case "PI": 
 				numNode.val = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
+				break;
 			case "E": 
 				numNode.val = 2.7182818284590452353602874713527;
-			case "NUMBER":
+				break;
+			default:
 				numNode.val = loclex.val;
-				
+				//console.log(loclex.name);
 				
 		}
 
@@ -239,18 +247,19 @@ function ExpressionParser(){
 
 	//to put the last number on, travel down the tree to the final null node
 	var rnode = mainTree.rhs;
-
-	if(rnode == 0){
-		mainTree.rhs = numNode;
-	} else {
-		while(rnode.rhs != 0){
+/*
+	if(rnode.hasOwnProperty('operator')){
+		while(rnode.operator != 0){
 			rnode = rnode.rhs;
 		}
-		rnode.rhs = numNode;
-	}
+	}*/
+			
+	mainTree.rhs = JSON.parse(JSON.stringify(numNode));	
 
 
 	console.log(mainTree);
+
+	return mainTree;
 
 //get precedence, then add to tree
 //also, this function is inside the expression parser function so that it can access maintree
@@ -258,9 +267,10 @@ function ExpressionParser(){
 function updateTree(operator){
 	precVal = precedence(mainTree.operator, operator);
 
-	var mainTreeClone = Object.assign({}, mainTree);
+	//JSON.parse(JSON.stringify performs deep copies
+	var mainTreeClone = JSON.parse(JSON.stringify(mainTree));
 	if(precVal){
-		mainTree.lhs = numNode;
+		mainTree.lhs = JSON.parse(JSON.stringify(numNode));
 		mainTree.operator = operator;
 		mainTree.rhs = mainTreeClone;
 	}
@@ -385,7 +395,7 @@ function evaluate(treem) {
 	//if it does, return the number.
 	//if it doesnt send the left and right hand sides for their number 
 	if(treem.hasOwnProperty('val')){
-		return node.val;
+		return treem.val;
 	} else {
 		var lhs = evaluate(treem.lhs);
 		var rhs = evaluate(treem.rhs);
