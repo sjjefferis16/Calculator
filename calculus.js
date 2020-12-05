@@ -200,7 +200,7 @@ function ExpressionParser(){
 	prevSymbol = "";
 	var numNode = new NumberNode(0);
 	var mainTree = new ExpressionNode(0, 0, 0);
-	precVal = 0;
+	precVal = true;
 
 	//go through the lexemes assigning values and operators
 	for (var i = 0; i < lexemes.length ; i++) {
@@ -224,12 +224,12 @@ function ExpressionParser(){
 			case "POWER":
 				updateTree("POWER");
 				prevSymbol = "POWER";
-			case "NUMBER":
-				numNode = new NumberNode(loclex.val);
 			case "PI": 
-				numNode = new NumberNode (3.141592653589793238462643383279502884197169399375105820974944592307816406286);
+				numNode.val = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 			case "E": 
-				numNode = new NumberNode (2.7182818284590452353602874713527);
+				numNode.val = 2.7182818284590452353602874713527;
+			case "NUMBER":
+				numNode.val = loclex.val;
 				
 				
 		}
@@ -257,6 +257,14 @@ function ExpressionParser(){
 //and numnode as local variables.
 function updateTree(operator){
 	precVal = precedence(mainTree.operator, operator);
+
+	var mainTreeClone = Object.assign({}, mainTree);
+	if(precVal){
+		mainTree.lhs = numNode;
+		mainTree.operator = operator;
+		mainTree.rhs = mainTreeClone;
+	}
+	/*
 	if(precVal == 100){
 		mainTree.lhs = numNode;
 		mainTree.operator = operator;
@@ -290,33 +298,32 @@ function updateTree(operator){
 		//or maybe good old tree.add(nodecreation )
 	}
 	mainTree.operator = prevSymbol;*/
-	return mainTree;
+
 }
 
+// this is now a boolean statement, if next operator is greater than the root, it returns true
 function precedence(rootOperator, nextOperator){
 	r = precedenceValFun(rootOperator);
 	n = precedenceValFun(nextOperator);
-	v = r - n;
-	if(rootOperator == 0){
-		return 100;
-	}
-	else{
-	return v;
-	}
+	return Boolean(r < n);
 }
 
 function precedenceValFun(operator){
-	ret = 0;
+
 	switch(operator){
-	case "PLUS": 
-	case "MINUS": ret = 0; break;
-
-	case "DIVIDES": 
-	case "TIMES": ret = 1; break;
-
-	case "POWER": ret = 2; break;   //+right associrativity
+		case 0:
+			return -1;
+		case "PLUS":
+			return 0; 
+		case "MINUS": 
+			return 1;
+		case "DIVIDES": 
+			return 1;
+		case "TIMES": 
+			return 1;
+		case "POWER":
+			 return 2;
 	}
-	return ret;
 
 }
 
@@ -373,16 +380,16 @@ term():
 /*Evalutates the parser tree to return the answer.*/
 
 
-function evaluate(node) {
+function evaluate(treem) {
 	//only number nodes have vals, so check for that
 	//if it does, return the number.
 	//if it doesnt send the left and right hand sides for their number 
-	if(node.hasOwnProperty('val')){
+	if(treem.hasOwnProperty('val')){
 		return node.val;
 	} else {
-		var lhs = evaluate(node.lhs);
-		var rhs = evaluate(node.rhs);
-		var ans = exprApp(lhs, rhs, node.operator);
+		var lhs = evaluate(treem.lhs);
+		var rhs = evaluate(treem.rhs);
+		var ans = exprApp(lhs, rhs, treem.operator);
 		return ans;
 	}
 
