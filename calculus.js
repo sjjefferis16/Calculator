@@ -212,7 +212,7 @@ function ExpressionParser() {
 	//go through the lexemes assigning values and operators
 	for (var i = 0; i < lexemes.length; i++) {
 		var loclex = lexemes[i];
-		console.log(loclex.name);
+		console.log(mainTree.operator);
 
 		//we're only adding one number at a time, so store it as an unmatch number node by default if its not an opperator.
 		switch (loclex.name) {
@@ -284,6 +284,7 @@ function ExpressionParser() {
 	//and numnode as local variables.
 	function updateTree(operator) {
 		precVal = precedence(mainTree.operator, operator);
+
 
 		//JSON.parse(JSON.stringify performs deep copies
 			
@@ -376,7 +377,7 @@ function ExpressionParser() {
 			case "PLUS":
 				return 0;
 			case "MINUS":
-				return 1;
+				return 0;
 			case "DIVIDES":
 				return 1;
 			case "TIMES":
