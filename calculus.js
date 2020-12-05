@@ -126,9 +126,6 @@ function LexicalAnalyzer(str) {
 
 function appendLexemes(name, val) {
 	//check for double opperations, and fail
-	if (val == prevVal && (prevVal == "O")) {
-		invalid = true;
-	}
 
 	//If an operator or paren is added, add the preceeding number and reset the appropriate values
 	if (val == "O" || val == "P") {
@@ -182,6 +179,12 @@ function errorLog() {
 		invalid = true;
 	}
 
+	for(var i = 0; i < (lexemes.length - 1); i++){
+		if(lexemes[i].val == "O"&&lexemes[i+1].val == "O"){
+			invalid = true;
+		}
+	}
+
 	if (invalid) {
 		clearFun();
 		document.getElementById("display").innerHTML = "Syntax ERROR";
@@ -203,6 +206,7 @@ function ExpressionParser() {
 	prevSymbol = "", curSymbol = "";
 	var numNode = new NumberNode(0);
 	var mainTree = new ExpressionNode(0, 0, 0);
+	var nullTree = new ExpressionNode(0, 0, 0);
 	precVal = true;
 
 	//go through the lexemes assigning values and operators
@@ -261,12 +265,12 @@ function ExpressionParser() {
 
 	//to put the last number on, travel down the tree to the final null node
 	var rnode = mainTree.rhs;
-	/*
+	
 		if(rnode.hasOwnProperty('operator')){
 			while(rnode.operator != 0){
 				rnode = rnode.rhs;
 			}
-		}*/
+		}
 
 	mainTree.rhs = JSON.parse(JSON.stringify(numNode));
 
@@ -282,19 +286,40 @@ function ExpressionParser() {
 		precVal = precedence(mainTree.operator, operator);
 
 		//JSON.parse(JSON.stringify performs deep copies
-		var mainTreeClone = JSON.parse(JSON.stringify(mainTree));
+			
+			var mainTreeClone = JSON.parse(JSON.stringify(mainTree));
 		if (precVal) {
 			//this makes it so  expr OldOper nmNode  then next num
 			//so that if + is lower prescidence it will be higher on the tree happening later
 			//currently presidence is measured -1, -+ 1,  and */ 2 ect. OOOR inverse prec val?idk
 			//may need to change prec func 
+
 			mainTree.lhs = JSON.parse(JSON.stringify(numNode));
 			mainTree.operator = operator;
 			mainTree.rhs = mainTreeClone;
 		}
 		else {
-			//num node on rhs of new operator , all on the main trees lhs
-			mainTree.lhs = expresionNode(JSON.parse(JSON.stringify(numNode)), 0 , operator);
+			//push the current number to the far right side, then add on top
+			var rnode = mainTree.rhs;
+	
+			if(rnode.hasOwnProperty('operator')){
+				while(rnode.operator != 0){
+					rnode = rnode.rhs;
+				}
+			}
+
+			mainTree.rhs = JSON.parse(JSON.stringify(numNode));
+
+			//make a new clone thats updated			
+			mainTreeClone = JSON.parse(JSON.stringify(mainTree));
+
+			
+
+			mainTree.lhs = mainTreeClone;
+			mainTree.operator = operator;
+			mainTree.rhs = JSON.parse(JSON.stringify(nullTree));
+
+			//mainTree.lhs = expresionNode(JSON.parse(JSON.stringify(numNode)), 0 , operator);
 			//operator.rhs = JSON.parse(JSON.stringify(numNode)); ?
 			//TODO if prec value falwse
 		}
