@@ -293,6 +293,7 @@ function ExpressionParser() {
 			mainTree.rhs = mainTreeClone;
 		}
 		else {
+			//num node on rhs of new operator , all on the main trees lhs
 			mainTree.lhs = expresionNode(JSON.parse(JSON.stringify(numNode)), 0 , operator);
 			//operator.rhs = JSON.parse(JSON.stringify(numNode)); ?
 			//TODO if prec value falwse
