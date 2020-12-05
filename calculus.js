@@ -198,6 +198,8 @@ function ExpressionParser() {
 
 	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. 
 	//precVal will be used to determine where we add expressions.
+
+	
 	prevSymbol = "", curSymbol = "";
 	var numNode = new NumberNode(0);
 	var mainTree = new ExpressionNode(0, 0, 0);
@@ -230,14 +232,18 @@ function ExpressionParser() {
 				updateTree("POWER");
 				prevSymbol = "POWER";
 				break;
+
 			case "LPAREN":
-				updateTree("LPAREN");
+				updateTree("LPAREN");  //--  something with prec values later forces a new subbranch into the tree. setting next real operator
+				//                            on the trees right then going back op to the main tree and adding the newe operator
+				//															as the parent () +  = + as parent for the new tree... focous on rhs operator managemnet i geuss
 				prevSymbol = "LPAREN";
 				break;
 			case "RPAREN":
 				updateTree("RPAREN");
 				prevSymbol = "RPAREN";
 				break;
+
 			case "PI":
 				numNode.val = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 				break;
@@ -278,11 +284,17 @@ function ExpressionParser() {
 		//JSON.parse(JSON.stringify performs deep copies
 		var mainTreeClone = JSON.parse(JSON.stringify(mainTree));
 		if (precVal) {
+			//this makes it so  expr OldOper nmNode  then next num
+			//so that if + is lower prescidence it will be higher on the tree happening later
+			//currently presidence is measured -1, -+ 1,  and */ 2 ect. OOOR inverse prec val?idk
+			//may need to change prec func 
 			mainTree.lhs = JSON.parse(JSON.stringify(numNode));
 			mainTree.operator = operator;
 			mainTree.rhs = mainTreeClone;
 		}
 		else {
+			mainTree.lhs = expresionNode(JSON.parse(JSON.stringify(numNode)), 0 , operator);
+			//operator.rhs = JSON.parse(JSON.stringify(numNode)); ?
 			//TODO if prec value falwse
 		}
 		/*
@@ -326,6 +338,7 @@ function ExpressionParser() {
 	function precedence(rootOperator, nextOperator) {
 		r = precedenceValFun(rootOperator);
 		n = precedenceValFun(nextOperator);
+		// may need to be flipped to r > n
 		return Boolean(r < n);
 	}
 
@@ -344,6 +357,11 @@ function ExpressionParser() {
 				return 1;
 			case "POWER":
 				return 2;
+				
+			case "LPAREN":
+				return 3;
+			case "RPAREN":
+				return 3;
 		}
 
 	}
