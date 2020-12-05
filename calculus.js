@@ -25,16 +25,16 @@ document.getElementById("/").addEventListener("click", function () { appendFun("
 document.getElementById("=").addEventListener("click", function () { calcFun() });
 document.getElementById("clear").addEventListener("click", function () { clearFun() });
 
-class ExpressionNode{
-	constructor(lhs, rhs, operator){
+class ExpressionNode {
+	constructor(lhs, rhs, operator) {
 		this.lhs = lhs
 		this.rhs = rhs
 		this.operator = operator
 	}
 }
 
-class NumberNode{
-	constructor(val){
+class NumberNode {
+	constructor(val) {
 		this.val = val;
 	}
 }
@@ -46,7 +46,7 @@ function calcFun() {
 	if (lexemes == []) {
 		return;
 	}
-	
+
 	var mt = ExpressionParser();
 	var ans = evaluate(mt);
 	console.log(ans);
@@ -193,8 +193,8 @@ function errorLog() {
 
 /**********************Expression Parser*************/
 
-function ExpressionParser(){
-	
+function ExpressionParser() {
+
 
 	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. 
 	//precVal will be used to determine where we add expressions.
@@ -204,12 +204,12 @@ function ExpressionParser(){
 	precVal = true;
 
 	//go through the lexemes assigning values and operators
-	for (var i = 0; i < lexemes.length ; i++) {
+	for (var i = 0; i < lexemes.length; i++) {
 		var loclex = lexemes[i];
 		console.log(loclex.name);
-		
+
 		//we're only adding one number at a time, so store it as an unmatch number node by default if its not an opperator.
-		switch(loclex.name){
+		switch (loclex.name) {
 			case "PLUS":
 				updateTree("PLUS");  //maybe +  ect
 				prevSymbol = "PLUS";
@@ -230,16 +230,24 @@ function ExpressionParser(){
 				updateTree("POWER");
 				prevSymbol = "POWER";
 				break;
-			case "PI": 
+			case "LPAREN":
+				updateTree("LPAREN");
+				prevSymbol = "LPAREN";
+				break;
+			case "RPAREN":
+				updateTree("RPAREN");
+				prevSymbol = "RPAREN";
+				break;
+			case "PI":
 				numNode.val = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 				break;
-			case "E": 
+			case "E":
 				numNode.val = 2.7182818284590452353602874713527;
 				break;
 			default:
 				numNode.val = loclex.val;
-				//console.log(loclex.name);
-				
+			//console.log(loclex.name);
+
 		}
 
 	}
@@ -247,95 +255,98 @@ function ExpressionParser(){
 
 	//to put the last number on, travel down the tree to the final null node
 	var rnode = mainTree.rhs;
-/*
-	if(rnode.hasOwnProperty('operator')){
-		while(rnode.operator != 0){
-			rnode = rnode.rhs;
-		}
-	}*/
-			
-	mainTree.rhs = JSON.parse(JSON.stringify(numNode));	
+	/*
+		if(rnode.hasOwnProperty('operator')){
+			while(rnode.operator != 0){
+				rnode = rnode.rhs;
+			}
+		}*/
+
+	mainTree.rhs = JSON.parse(JSON.stringify(numNode));
 
 
 	console.log(mainTree);
 
 	return mainTree;
 
-//get precedence, then add to tree
-//also, this function is inside the expression parser function so that it can access maintree
-//and numnode as local variables.
-function updateTree(operator){
-	precVal = precedence(mainTree.operator, operator);
+	//get precedence, then add to tree
+	//also, this function is inside the expression parser function so that it can access maintree
+	//and numnode as local variables.
+	function updateTree(operator) {
+		precVal = precedence(mainTree.operator, operator);
 
-	//JSON.parse(JSON.stringify performs deep copies
-	var mainTreeClone = JSON.parse(JSON.stringify(mainTree));
-	if(precVal){
-		mainTree.lhs = JSON.parse(JSON.stringify(numNode));
-		mainTree.operator = operator;
-		mainTree.rhs = mainTreeClone;
-	}
-	/*
-	if(precVal == 100){
-		mainTree.lhs = numNode;
-		mainTree.operator = operator;
-	}
-	else{
-		if(precVal < 0){//not sure what to do but lower on the tree (main - new op)
-			mainTree.lhs = operator;
-			operator.rhs = numNode;
-			//mainTree = new ExpressionNode(numNode, mainTree, operator);
-		} else {//as above but on uper on the tree
-			old = mainTree;
+		//JSON.parse(JSON.stringify performs deep copies
+		var mainTreeClone = JSON.parse(JSON.stringify(mainTree));
+		if (precVal) {
+			mainTree.lhs = JSON.parse(JSON.stringify(numNode));
 			mainTree.operator = operator;
-			mainTree.lhs = old;
-			//hnmmn??\/
-			mainTree.rhs = numNode;
+			mainTree.rhs = mainTreeClone;
 		}
-	}
-	/*
-	if(precVal >= 0){
-		//top node operator should become the * or / to evalute later
-		mainTree.lhs = ExpressionNode(numNode, null, operator);
-	} else { //evaluate sooner so make it the parent with the number on rhs
-		//var = mainTree;
-		if(operator == "POWER"){
-			mainTree = ExpressionNode(numNode, null, operator);  //?? lh Associativity
+		else {
+			//TODO if prec value falwse
+		}
+		/*
+		if(precVal == 100){
+			mainTree.lhs = numNode;
+			mainTree.operator = operator;
 		}
 		else{
-			mainTree = ExpressionNode(null, numNode, operator); 
+			if(precVal < 0){//not sure what to do but lower on the tree (main - new op)
+				mainTree.lhs = operator;
+				operator.rhs = numNode;
+				//mainTree = new ExpressionNode(numNode, mainTree, operator);
+			} else {//as above but on uper on the tree
+				old = mainTree;
+				mainTree.operator = operator;
+				mainTree.lhs = old;
+				//hnmmn??\/
+				mainTree.rhs = numNode;
+			}
 		}
-		//mainTree.rhs = ExpresionNode(var, NumberNode , operator);
-		//or maybe good old tree.add(nodecreation )
-	}
-	mainTree.operator = prevSymbol;*/
+		/*
+		if(precVal >= 0){
+			//top node operator should become the * or / to evalute later
+			mainTree.lhs = ExpressionNode(numNode, null, operator);
+		} else { //evaluate sooner so make it the parent with the number on rhs
+			//var = mainTree;
+			if(operator == "POWER"){
+				mainTree = ExpressionNode(numNode, null, operator);  //?? lh Associativity
+			}
+			else{
+				mainTree = ExpressionNode(null, numNode, operator); 
+			}
+			//mainTree.rhs = ExpresionNode(var, NumberNode , operator);
+			//or maybe good old tree.add(nodecreation )
+		}
+		mainTree.operator = prevSymbol;*/
 
-}
-
-// this is now a boolean statement, if next operator is greater than the root, it returns true
-function precedence(rootOperator, nextOperator){
-	r = precedenceValFun(rootOperator);
-	n = precedenceValFun(nextOperator);
-	return Boolean(r < n);
-}
-
-function precedenceValFun(operator){
-
-	switch(operator){
-		case 0:
-			return -1;
-		case "PLUS":
-			return 0; 
-		case "MINUS": 
-			return 1;
-		case "DIVIDES": 
-			return 1;
-		case "TIMES": 
-			return 1;
-		case "POWER":
-			 return 2;
 	}
 
-}
+	// this is now a boolean statement, if next operator is greater than the root, it returns true
+	function precedence(rootOperator, nextOperator) {
+		r = precedenceValFun(rootOperator);
+		n = precedenceValFun(nextOperator);
+		return Boolean(r < n);
+	}
+
+	function precedenceValFun(operator) {
+
+		switch (operator) {
+			case 0:
+				return -1;
+			case "PLUS":
+				return 0;
+			case "MINUS":
+				return 1;
+			case "DIVIDES":
+				return 1;
+			case "TIMES":
+				return 1;
+			case "POWER":
+				return 2;
+		}
+
+	}
 
 }
 
@@ -394,7 +405,7 @@ function evaluate(treem) {
 	//only number nodes have vals, so check for that
 	//if it does, return the number.
 	//if it doesnt send the left and right hand sides for their number 
-	if(treem.hasOwnProperty('val')){
+	if (treem.hasOwnProperty('val')) {
 		return treem.val;
 	} else {
 		var lhs = evaluate(treem.lhs);
@@ -405,18 +416,18 @@ function evaluate(treem) {
 
 }
 
-function exprApp(l, r, op){
-	switch(op){
+function exprApp(l, r, op) {
+	switch (op) {
 		case "PLUS":
 			return l + r;
 		case "MINUS":
 			return l - r;
-		case "DIVIDES": 
+		case "DIVIDES":
 			return l / r;
-		case "TIMES": 
+		case "TIMES":
 			return l * r;
-		case "POWER": 
-			return Math.pow(l,r); 	
+		case "POWER":
+			return Math.pow(l, r);
 	}
 }
 
