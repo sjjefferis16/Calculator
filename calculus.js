@@ -266,9 +266,9 @@ function updateTree(operator){
 		} else {//as above but on uper on the tree
 			old = mainTree;
 			mainTree.operator = operator;
-			mainTree.rhs = old;
+			mainTree.lhs = old;
 			//hnmmn??\/
-			mainTree.lhs = numNode;
+			mainTree.rhs = numNode;
 		}
 	}
 	/*
