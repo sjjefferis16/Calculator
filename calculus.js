@@ -25,6 +25,20 @@ document.getElementById("/").addEventListener("click", function () { appendFun("
 document.getElementById("=").addEventListener("click", function () { calcFun() });
 document.getElementById("clear").addEventListener("click", function () { clearFun() });
 
+class ExpressionNode{
+	constructor(lhs, rhs, operator){
+		this.lhs = lhs
+		this.rhs = rhs
+		this.operator = operator
+	}
+}
+
+class NumberNode{
+	constructor(val){
+		this.val = val;
+	}
+}
+
 function calcFun() {
 	LexicalAnalyzer(exp);
 	console.log(lexemes);
@@ -33,7 +47,8 @@ function calcFun() {
 		return;
 	}
 	
-	ExpressionParser();
+	var mt = ExpressionParser();
+	var ans = evaluate(mt);
 }
 
 /****************BEGIN LEXICAL ANALYSIS********/
@@ -178,19 +193,7 @@ function errorLog() {
 /**********************Expression Parser*************/
 
 function ExpressionParser(){
-	class ExpressionNode{
-		constructor(lhs, rhs, operator){
-			this.lhs = lhs
-			this.rhs = rhs
-			this.operator = operator
-		}
-	}
-
-	class NumberNode{
-		constructor(val){
-			this.val = val;
-		}
-	}
+	
 
 	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. 
 	//precVal will be used to determine where we add expressions.
@@ -371,24 +374,32 @@ term():
 
 
 function evaluate(node) {
-	if (node.isExpressionNode()) { //node type is exprsion node.
-		lhs = evaluate(node.lhs);
-		rhs = evaluate(node.rhs);
-		//return lhs node.operator() rhs;//this would be like 3 + 2  not sure about substitution here
-
-		//needs final lhs operator rhs(so it will work for anytype)
-		switch(operator){
-		case "PLUS": return lhs + rhs;
-		case "MINUS": return lhs - rhs;
-	
-		case "DIVIDES": return lhs / rhs; //ints maybe weird here 
-		case "TIMES": return lhs * rhs;
-	
-		case "POWER": return lhs ^ rhs;   //+right associrativity goos?
-		}
+	//only number nodes have vals, so check for that
+	//if it does, return the number.
+	//if it doesnt send the left and right hand sides for their number 
+	if(node.hasOwnProperty('val')){
+		return node.val;
+	} else {
+		var lhs = evaluate(node.lhs);
+		var rhs = evaluate(node.rhs);
+		var ans = exprApp(lhs, rhs, node.operator);
+		return ans;
 	}
- else {
-		return node.value;
+
+}
+
+function exprApp(l, r, op){
+	switch(op){
+		case "PLUS":
+			return l + r;
+		case "MINUS":
+			return l - r;
+		case "DIVIDES": 
+			return l / r;
+		case "TIMES": 
+			return l * r;
+		case "POWER": 
+			return Math.pow(l,r); 	
 	}
 }
 
