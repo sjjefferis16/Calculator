@@ -339,6 +339,10 @@ function ExpressionParser() {
 
 	// this is now a boolean statement, if next operator is greater than the root, it returns true
 	function precedence(rootOperator, nextOperator) {
+		// you were right!!!
+		if(rootOperator == "POWER" && nextOperator == "POWER"){
+			return true;
+		}
 		r = precedenceValFun(rootOperator);
 		n = precedenceValFun(nextOperator);
 		// may need to be flipped to r > n
