@@ -264,15 +264,17 @@ function ExpressionParser() {
 
 
 	//to put the last number on, travel down the tree to the final null node
-	var rnode = mainTree.rhs;
-	
-		if(rnode.hasOwnProperty('operator')){
-			while(rnode.operator != 0){
-				rnode = rnode.rhs;
-			}
-		}
 
-	mainTree.rhs = JSON.parse(JSON.stringify(numNode));
+	//TODO: this works for 1+2*3 but the while loop does not/
+	var rnode = mainTree.rhs.rhs;
+	
+			//if(rnode.hasOwnProperty('operator')){
+				//while(rnode.operator != 0){
+					//rnode = rnode.rhs;
+				//}
+			//}
+
+	mainTree.rhs.rhs = JSON.parse(JSON.stringify(numNode));
 
 
 	console.log(mainTree);
@@ -304,7 +306,7 @@ function ExpressionParser() {
 
 			rnode.lhs = JSON.parse(JSON.stringify(numNode));
 			rnode.operator = operator;
-			rnode.rhs = mainTreeClone;
+			rnode.rhs = nullTree;
 		}
 		else {
 			//push the current number to the far right side, then add on top
@@ -316,7 +318,7 @@ function ExpressionParser() {
 				}
 			}
 
-			mainTree.rhs = JSON.parse(JSON.stringify(numNode));
+			rnode = JSON.parse(JSON.stringify(numNode));
 
 			//make a new clone thats updated			
 			mainTreeClone = JSON.parse(JSON.stringify(mainTree));
