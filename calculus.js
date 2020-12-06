@@ -265,19 +265,18 @@ function ExpressionParser() {
 
 	//to put the last number on, travel down the tree to the final null node
 
-	//TODO: this works for 1+2*3 but the while loop does not/
-	var rnode = mainTree.rhs.rhs; mainTree.mainTree.rhs;
-	while(rnode.rhs != 0){
-		rnode = rnode.rhs
-	}
+	//Alright, this thing...
+	//start at the mainTree, then check if the rhs is a null tree, because were still not on the 
+	//actual null tree, replace it at rnode.rhs.
+	var rnode = mainTree;
 	
-			//if(rnode.hasOwnProperty('operator')){
-				//while(rnode.operator != 0){
-					//rnode = rnode.rhs;
-				//}
-			//}
+			
+			while(rnode.rhs.operator != 0){
+				rnode = rnode.rhs;
+			}
+			
 
-	mainTree.rhs.rhs = JSON.parse(JSON.stringify(numNode));
+	rnode.rhs = JSON.parse(JSON.stringify(numNode));
 
 
 	console.log(mainTree);
@@ -301,32 +300,26 @@ function ExpressionParser() {
 			//may need to change prec func 
 			var rnode = mainTree;
 	
-			if(rnode.hasOwnProperty('operator')){
-				while(rnode.operator != 0){
-					rnode = rnode.rhs;
-				}
+
+			while(rnode.operator != 0){
+				rnode = rnode.rhs;
 			}
 
 			rnode.lhs = JSON.parse(JSON.stringify(numNode));
 			rnode.operator = operator;
-			rnode.rhs = nullTree;
+			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
 		}
 		else {
 			//push the current number to the far right side, then add on top
-
-			//places stored number
-			var temp = mainTree;
-			if(temp.hasOwnProperty('operator')){
-				while(temp.operator != 0){
-					temp = temp.rhs;
-				}
+			var rnode = mainTree;
+	
+			
+			while(rnode.rhs.operator != 0){
+				rnode = rnode.rhs;
 			}
-			temp.rhs= JSON.parse(JSON.stringify(numNode));; //needs to be in the tree not just a copy,, not sure if thats what is happaning but it should be
+			
 
-			//sets new root
-			var rnode = new ExpressionNode(mainTree,0,operator);
-			mainTree = rnode;
-			/*
+			rnode.rhs = JSON.parse(JSON.stringify(numNode));
 
 			//make a new clone thats updated			
 			mainTreeClone = JSON.parse(JSON.stringify(mainTree));
@@ -336,56 +329,19 @@ function ExpressionParser() {
 			mainTree.lhs = mainTreeClone;
 			mainTree.operator = operator;
 			mainTree.rhs = JSON.parse(JSON.stringify(nullTree));
-				*/
+
 			//mainTree.lhs = expresionNode(JSON.parse(JSON.stringify(numNode)), 0 , operator);
 			//operator.rhs = JSON.parse(JSON.stringify(numNode)); ?
 			//TODO if prec value falwse
 		}
-		/*
-		if(precVal == 100){
-			mainTree.lhs = numNode;
-			mainTree.operator = operator;
-		}
-		else{
-			if(precVal < 0){//not sure what to do but lower on the tree (main - new op)
-				mainTree.lhs = operator;
-				operator.rhs = numNode;
-				//mainTree = new ExpressionNode(numNode, mainTree, operator);
-			} else {//as above but on uper on the tree
-				old = mainTree;
-				mainTree.operator = operator;
-				mainTree.lhs = old;
-				//hnmmn??\/
-				mainTree.rhs = numNode;
-			}
-		}
-		/*
-		if(precVal >= 0){
-			//top node operator should become the * or / to evalute later
-			mainTree.lhs = ExpressionNode(numNode, null, operator);
-		} else { //evaluate sooner so make it the parent with the number on rhs
-			//var = mainTree;
-			if(operator == "POWER"){
-				mainTree = ExpressionNode(numNode, null, operator);  //?? lh Associativity
-			}
-			else{
-				mainTree = ExpressionNode(null, numNode, operator); 
-			}
-			//mainTree.rhs = ExpresionNode(var, NumberNode , operator);
-			//or maybe good old tree.add(nodecreation )
-		}
-		mainTree.operator = prevSymbol;*/
 
 	}
 
 	// this is now a boolean statement, if next operator is greater than the root, it returns true
 	function precedence(rootOperator, nextOperator) {
-		if(rootOperator == "POWER" && nextOperator == "POWER"){
-			return true;//so it will be lower on the tree with next operator
-		}
 		r = precedenceValFun(rootOperator);
 		n = precedenceValFun(nextOperator);
-		// may need to be flipped to r > n  or =< 
+		// may need to be flipped to r > n
 		return Boolean(r < n);
 	}
 
@@ -415,49 +371,6 @@ function ExpressionParser() {
 
 }
 
-//update the tree based on precedence, 			adding nodes to it.?  numb nodes?
-
-//associativity shoudl come into play here  could check if oper is power manually?
-
-/*
-expr (prev_precedence=-1):
- lhs <- term()
- while (true){
- op <- nextLexeme(); // ensure that it’s an operator
- curr_precedence <- precedence(op)
- if (curr_precedence < prev_precedence){
- break;
- }
- if (association(op) == left_to_right){
- rhs <- expr(curr_precedence + 1);
- }
- else{
-	rhs <- expr(curr_precedence);
-	lhs = ExpressionNode (lhs, op, rhs);
- }
-}
- return lhs;
-term():
- val <- nextLexeme()
- if (val is NUMBER){
- return NumberNode (val.value);
- }
- else if (val is PI){
- return NumberNode (3.141592653589793238462643383279502884197169399375105820974944592307816406286);
- }
- else if (val is E){
- return NumberNode (2.7182818284590452353602874713527);
- }
- else if (val is LPAREN){
- node ß expr();
- assert (nextLexeme() is RPAREN);
- return node;
- }
- else{
-	// return -0;
-	 // failure – expected number but got something else
- }
- */
 
 /**********************End Expression Parser*************/
 
