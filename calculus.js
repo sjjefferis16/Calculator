@@ -198,7 +198,6 @@ function errorLog() {
 
 function ExpressionParser() {
 
-
 	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. 
 	//precVal will be used to determine where we add expressions.
 
@@ -207,6 +206,8 @@ function ExpressionParser() {
 	var numNode = new NumberNode(0);
 	var mainTree = new ExpressionNode(0, 0, 0);
 	var nullTree = new ExpressionNode(0, 0, 0);
+	var basePar = 0;
+	var treeList = [];
 	precVal = true;
 
 	//go through the lexemes assigning values and operators
@@ -287,40 +288,77 @@ function ExpressionParser() {
 	//also, this function is inside the expression parser function so that it can access maintree
 	//and numnode as local variables.
 	function updateTree(operator) {
-		precVal = precedence(mainTree.operator, operator);
-
+		var mt = mainTree;
+		if(treeList.length != 0){
+		mt = treeList[(treeList.length - 1)];
+		}
+		precVal = precedence(mt.operator, operator);
+		
 
 		//JSON.parse(JSON.stringify performs deep copies
 			
-			var mainTreeClone = JSON.parse(JSON.stringify(mainTree));
+			var mainTreeClone = JSON.parse(JSON.stringify(mt));
 		if (precVal) {
 			//this makes it so  expr OldOper nmNode  then next num
 			//so that if + is lower prescidence it will be higher on the tree happening later
 			//currently presidence is measured -1, -+ 1,  and */ 2 ect. OOOR inverse prec val?idk
 			//may need to change prec func 
-			var rnode = mainTree;
-	
+			var rnode = mt;
+		
+			var nt = JSON.parse(JSON.stringify(nullTree))
 
 			while(rnode.operator != 0){
 				rnode = rnode.rhs;
 			}
 			if(rnode.operator == "LPAREN"){
-				//temp value becomes carrier for the subtree of this
+				//temp value becomes carrier for the subtree of this				
+				basePar++;
+				let subtree = {
+					"tree": nt,
+					"val": basePar
+				}
+				treeList.push(subtree);
 			}
 			else  
-			if(rnode.operator == "RPAREN"){
+			if(rnode.operator == "RPAREN"){//ADDS back to base Tree
+				
 				//temp tree becomes part of main tree... what to do for multiple (( ))s' is
 				// ? gets deposited into a branch, could be a rhs or lhs
+				
+				rnode.lhs = JSON.parse(JSON.stringify(numNode));				
+				 
+				rnode.operator = operator;
+				rnode.rhs = JSON.parse(JSON.stringify(mt));
+				basePar--;
+
+
+				//add subtree to the loc from length -1 > 0 else somthing wrong 
+				//for length - 1  > 0
+			  ///for name json, copy of null tree
+			//for val use =0 near 
+			
 			}
 			else{
-				rnode.lhs = JSON.parse(JSON.stringify(numNode));
-				rnode.operator = operator;
-				rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+				/*
+				if(ntB > 0 ){
+					//adds to adif tree
+					// NOT YET a diff tree  for formatingn only
+					rnode.lhs = JSON.parse(JSON.stringify(numNode));
+					rnode.operator = operator;
+					rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+
+				}
+				else{  }
+					*/
+					rnode.lhs = JSON.parse(JSON.stringify(numNode));
+					rnode.operator = operator;
+					rnode.rhs = JSON.parse(JSON.stringify(nullTree));
 			}
+			
 		}
 		else {
 			//push the current number to the far right side, then add on top
-			var rnode = mainTree;
+			var rnode = mt;
 	
 			
 			while(rnode.rhs.operator != 0){
