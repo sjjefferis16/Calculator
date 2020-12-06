@@ -198,6 +198,7 @@ function errorLog() {
 
 function ExpressionParser() {
 
+
 	//before we do anything, create a spot to store prevSymbol, number data, and the expression tree. 
 	//precVal will be used to determine where we add expressions.
 
@@ -239,14 +240,32 @@ function ExpressionParser() {
 				break;
 
 			case "LPAREN":
-				updateTree("LPAREN");  //--  something with prec values later forces a new subbranch into the tree. setting next real operator
+				//updateTree("LPAREN");  //--  something with prec values later forces a new subbranch into the tree. setting next real operator
 				//                            on the trees right then going back op to the main tree and adding the newe operator
 				//															as the parent () +  = + as parent for the new tree... focous on rhs operator managemnet i geuss
+				var nt = JSON.parse(JSON.stringify(nullTree));
+				//temp value becomes carrier for the subtree of this				
+					
+					treeList.push(nt);
+
 				prevSymbol = "LPAREN";
 				break;
 			case "RPAREN":
-				updateTree("RPAREN");
-				prevSymbol = "RPAREN";
+				//updateTree("RPAREN");
+				//prevSymbol = "RPAREN";
+
+				var rpn = mainTree;
+	
+			
+				while(rpn.rhs.operator != 0){
+					rpn = rpn.rhs;
+				}
+				
+
+				rpn.rhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
+
+				treeList.pop();
+				basePar--;
 				break;
 
 			case "PI":
@@ -288,77 +307,38 @@ function ExpressionParser() {
 	//also, this function is inside the expression parser function so that it can access maintree
 	//and numnode as local variables.
 	function updateTree(operator) {
-		var mt = mainTree;
+
+		var workTree = mainTree;
 		if(treeList.length != 0){
-		mt = treeList[(treeList.length - 1)];
+		workTree = treeList[(treeList.length - 1)];
 		}
-		precVal = precedence(mt.operator, operator);
-		
+		console.log("treeList length" + treeList.length);
+
+		precVal = precedence(workTree.operator, operator);
+
 
 		//JSON.parse(JSON.stringify performs deep copies
 			
-			var mainTreeClone = JSON.parse(JSON.stringify(mt));
+			var mainTreeClone = JSON.parse(JSON.stringify(workTree));
 		if (precVal) {
 			//this makes it so  expr OldOper nmNode  then next num
 			//so that if + is lower prescidence it will be higher on the tree happening later
 			//currently presidence is measured -1, -+ 1,  and */ 2 ect. OOOR inverse prec val?idk
 			//may need to change prec func 
-			var rnode = mt;
-		
-			var nt = JSON.parse(JSON.stringify(nullTree))
+			var rnode = workTree;
+	
 
 			while(rnode.operator != 0){
 				rnode = rnode.rhs;
 			}
-			if(rnode.operator == "LPAREN"){
-				//temp value becomes carrier for the subtree of this				
-				basePar++;
-				let subtree = {
-					"tree": nt,
-					"val": basePar
-				}
-				treeList.push(subtree);
-			}
-			else  
-			if(rnode.operator == "RPAREN"){//ADDS back to base Tree
-				
-				//temp tree becomes part of main tree... what to do for multiple (( ))s' is
-				// ? gets deposited into a branch, could be a rhs or lhs
-				
-				rnode.lhs = JSON.parse(JSON.stringify(numNode));				
-				 
-				rnode.operator = operator;
-				rnode.rhs = JSON.parse(JSON.stringify(mt));
-				basePar--;
 
-
-				//add subtree to the loc from length -1 > 0 else somthing wrong 
-				//for length - 1  > 0
-			  ///for name json, copy of null tree
-			//for val use =0 near 
-			
-			}
-			else{
-				/*
-				if(ntB > 0 ){
-					//adds to adif tree
-					// NOT YET a diff tree  for formatingn only
-					rnode.lhs = JSON.parse(JSON.stringify(numNode));
-					rnode.operator = operator;
-					rnode.rhs = JSON.parse(JSON.stringify(nullTree));
-
-				}
-				else{  }
-					*/
-					rnode.lhs = JSON.parse(JSON.stringify(numNode));
-					rnode.operator = operator;
-					rnode.rhs = JSON.parse(JSON.stringify(nullTree));
-			}
-			
+			rnode.lhs = JSON.parse(JSON.stringify(numNode));
+			rnode.operator = operator;
+			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
 		}
 		else {
 			//push the current number to the far right side, then add on top
-			var rnode = mt;
+			var rnode = workTree;
 	
 			
 			while(rnode.rhs.operator != 0){
@@ -369,7 +349,7 @@ function ExpressionParser() {
 			rnode.rhs = JSON.parse(JSON.stringify(numNode));
 
 			//make a new clone thats updated			
-			mainTreeClone = JSON.parse(JSON.stringify(mainTree));
+			mainTreeClone = JSON.parse(JSON.stringify(workTree));
 
 			
 
@@ -390,8 +370,12 @@ function ExpressionParser() {
 		if(rootOperator == "POWER" && nextOperator == "POWER"){
 			return true;
 		}
+		//if(nextOperator == "RPAREN"){
+		//	return false;
+		//}
 		r = precedenceValFun(rootOperator);
 		n = precedenceValFun(nextOperator);
+		// may need to be flipped to r > n
 		return Boolean(r < n);
 	}
 
