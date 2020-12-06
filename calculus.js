@@ -304,10 +304,19 @@ function ExpressionParser() {
 			while(rnode.operator != 0){
 				rnode = rnode.rhs;
 			}
-
-			rnode.lhs = JSON.parse(JSON.stringify(numNode));
-			rnode.operator = operator;
-			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+			if(rnode.operator == "LPAREN"){
+				//temp value becomes carrier for the subtree of this
+			}
+			else  
+			if(rnode.operator == "RPAREN"){
+				//temp tree becomes part of main tree... what to do for multiple (( ))s' is
+				// ? gets deposited into a branch, could be a rhs or lhs
+			}
+			else{
+				rnode.lhs = JSON.parse(JSON.stringify(numNode));
+				rnode.operator = operator;
+				rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+			}
 		}
 		else {
 			//push the current number to the far right side, then add on top
@@ -345,7 +354,6 @@ function ExpressionParser() {
 		}
 		r = precedenceValFun(rootOperator);
 		n = precedenceValFun(nextOperator);
-		// may need to be flipped to r > n
 		return Boolean(r < n);
 	}
 
