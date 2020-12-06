@@ -266,7 +266,10 @@ function ExpressionParser() {
 	//to put the last number on, travel down the tree to the final null node
 
 	//TODO: this works for 1+2*3 but the while loop does not/
-	var rnode = mainTree.rhs.rhs;
+	var rnode = mainTree.rhs.rhs; mainTree.mainTree.rhs;
+	while(rnode.rhs != 0){
+		rnode = rnode.rhs
+	}
 	
 			//if(rnode.hasOwnProperty('operator')){
 				//while(rnode.operator != 0){
@@ -310,15 +313,20 @@ function ExpressionParser() {
 		}
 		else {
 			//push the current number to the far right side, then add on top
-			var rnode = mainTree.rhs;
-	
-			if(rnode.hasOwnProperty('operator')){
-				while(rnode.operator != 0){
-					rnode = rnode.rhs;
+
+			//places stored number
+			var temp = mainTree;
+			if(temp.hasOwnProperty('operator')){
+				while(temp.operator != 0){
+					temp = temp.rhs;
 				}
 			}
+			temp.rhs= JSON.parse(JSON.stringify(numNode));; //needs to be in the tree not just a copy,, not sure if thats what is happaning but it should be
 
-			rnode = JSON.parse(JSON.stringify(numNode));
+			//sets new root
+			var rnode = new ExpressionNode(mainTree,0,operator);
+			mainTree = rnode;
+			/*
 
 			//make a new clone thats updated			
 			mainTreeClone = JSON.parse(JSON.stringify(mainTree));
@@ -328,7 +336,7 @@ function ExpressionParser() {
 			mainTree.lhs = mainTreeClone;
 			mainTree.operator = operator;
 			mainTree.rhs = JSON.parse(JSON.stringify(nullTree));
-
+				*/
 			//mainTree.lhs = expresionNode(JSON.parse(JSON.stringify(numNode)), 0 , operator);
 			//operator.rhs = JSON.parse(JSON.stringify(numNode)); ?
 			//TODO if prec value falwse
@@ -372,9 +380,12 @@ function ExpressionParser() {
 
 	// this is now a boolean statement, if next operator is greater than the root, it returns true
 	function precedence(rootOperator, nextOperator) {
+		if(rootOperator == "POWER" && nextOperator == "POWER"){
+			return true;//so it will be lower on the tree with next operator
+		}
 		r = precedenceValFun(rootOperator);
 		n = precedenceValFun(nextOperator);
-		// may need to be flipped to r > n
+		// may need to be flipped to r > n  or =< 
 		return Boolean(r < n);
 	}
 
