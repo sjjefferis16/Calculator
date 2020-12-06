@@ -294,10 +294,17 @@ function ExpressionParser() {
 			//so that if + is lower prescidence it will be higher on the tree happening later
 			//currently presidence is measured -1, -+ 1,  and */ 2 ect. OOOR inverse prec val?idk
 			//may need to change prec func 
+			var rnode = mainTree;
+	
+			if(rnode.hasOwnProperty('operator')){
+				while(rnode.operator != 0){
+					rnode = rnode.rhs;
+				}
+			}
 
-			mainTree.lhs = JSON.parse(JSON.stringify(numNode));
-			mainTree.operator = operator;
-			mainTree.rhs = mainTreeClone;
+			rnode.lhs = JSON.parse(JSON.stringify(numNode));
+			rnode.operator = operator;
+			rnode.rhs = mainTreeClone;
 		}
 		else {
 			//push the current number to the far right side, then add on top
