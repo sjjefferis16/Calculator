@@ -251,9 +251,9 @@ function ExpressionParser() {
 				prevSymbol = "LPAREN";
 				break;
 			case "RPAREN":
-				if(prevSymbol == "LPAREN")	break;// solves ()
-				else
-				//issue     here i think
+				//updateTree("RPAREN");
+				//prevSymbol = "RPAREN";
+
 				var rpn = mainTree;
 				console.log(treeList[(treeList.length - 1)]);
 	
@@ -263,9 +263,6 @@ function ExpressionParser() {
 					}
 					rpn.rhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
 				} else {
-					while(rpn.operator.lhs != 0){
-						rpn = rpn.lhs;
-					}
 					rpn.lhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
 					mainTree.lhs.rhs = JSON.parse(JSON.stringify(numNode));
 				}
@@ -289,6 +286,9 @@ function ExpressionParser() {
 		}
 
 	}
+
+
+
 
 
 	//to put the last number on, travel down the tree to the final null node
@@ -340,16 +340,19 @@ function ExpressionParser() {
 				rnode = rnode.rhs;
 			}
 
-			if(mainTree.operator == 0 && mainTree.rhs == 0 && mainTree.lhs != 0){
-			rnode.operator = operator;
-			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+			if(!rnode.lhs.hasOwnProperty('operator')){
+				rnode.lhs = JSON.parse(JSON.stringify(numNode));
+			}
 
-			}
-			else{
-			rnode.lhs = JSON.parse(JSON.stringify(numNode));
+			//if(mainTree.operator == 0 && mainTree.rhs == 0 && mainTree.lhs != 0){
+			//rnode.operator = operator;
+			//rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+			//}
+			//else{
+			//rnode.lhs = JSON.parse(JSON.stringify(numNode));
 			rnode.operator = operator;
 			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
-			}
+			//}
 		}
 		else {
 			//push the current number to the far right side, then add on top
