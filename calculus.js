@@ -255,14 +255,19 @@ function ExpressionParser() {
 				//prevSymbol = "RPAREN";
 
 				var rpn = mainTree;
+				console.log(treeList[(treeList.length - 1)]);
 	
-			
-				while(rpn.rhs.operator != 0){
-					rpn = rpn.rhs;
+				if(rpn.operator != 0){
+					while(rpn.rhs.operator != 0){
+						rpn = rpn.rhs;
+					}
+					rpn.rhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
+				} else {
+					rpn.lhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
+					mainTree.lhs.rhs = JSON.parse(JSON.stringify(numNode));
 				}
 				
 
-				rpn.rhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
 
 				treeList.pop();
 				basePar--;
@@ -332,9 +337,15 @@ function ExpressionParser() {
 				rnode = rnode.rhs;
 			}
 
+			if(mainTree.operator == 0 && mainTree.rhs == 0 && mainTree.lhs != 0){
+			rnode.operator = operator;
+			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+			}
+			else{
 			rnode.lhs = JSON.parse(JSON.stringify(numNode));
 			rnode.operator = operator;
 			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+			}
 		}
 		else {
 			//push the current number to the far right side, then add on top
