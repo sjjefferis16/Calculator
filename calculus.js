@@ -251,9 +251,9 @@ function ExpressionParser() {
 				prevSymbol = "LPAREN";
 				break;
 			case "RPAREN":
-				//updateTree("RPAREN");
-				//prevSymbol = "RPAREN";
-
+				if(prevSymbol == "LPAREN")	break;// solves ()
+				else
+				//issue     here i think
 				var rpn = mainTree;
 				console.log(treeList[(treeList.length - 1)]);
 	
@@ -263,6 +263,9 @@ function ExpressionParser() {
 					}
 					rpn.rhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
 				} else {
+					while(rpn.operator.lhs != 0){
+						rpn = rpn.lhs;
+					}
 					rpn.lhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
 					mainTree.lhs.rhs = JSON.parse(JSON.stringify(numNode));
 				}
@@ -340,6 +343,7 @@ function ExpressionParser() {
 			if(mainTree.operator == 0 && mainTree.rhs == 0 && mainTree.lhs != 0){
 			rnode.operator = operator;
 			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
+
 			}
 			else{
 			rnode.lhs = JSON.parse(JSON.stringify(numNode));
