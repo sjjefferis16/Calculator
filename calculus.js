@@ -1,7 +1,9 @@
+//Global variables
 var exp = "";
 var ans = 0.0
 var lexemes = [];
 
+//functions that are called any time a button is clicked
 document.getElementById("(").addEventListener("click", function () { appendFun("(") });
 document.getElementById(")").addEventListener("click", function () { appendFun(")") });
 document.getElementById("pi").addEventListener("click", function () { appendFun("π") });
@@ -25,6 +27,7 @@ document.getElementById("/").addEventListener("click", function () { appendFun("
 document.getElementById("=").addEventListener("click", function () { calcFun() });
 document.getElementById("clear").addEventListener("click", function () { clearFun() });
 
+//class definitions for number and expression nodes
 class ExpressionNode {
 	constructor(lhs, rhs, operator) {
 		this.lhs = lhs
@@ -39,9 +42,10 @@ class NumberNode {
 	}
 }
 
+//special function that causes the three parts to execute
 function calcFun() {
 	LexicalAnalyzer(exp);
-	console.log(lexemes);
+	//console.log(lexemes);
 
 	if (lexemes == []) {
 		return;
@@ -49,7 +53,13 @@ function calcFun() {
 
 	var mt = ExpressionParser();
 	var ans = evaluate(mt);
-	console.log(ans);
+
+	exp = ans;
+	ans = 0.0
+	lexemes = [];
+	document.getElementById("display").innerHTML = exp;
+	//console.log(exp);
+	//console.log(ans);
 }
 
 /****************BEGIN LEXICAL ANALYSIS********/
@@ -156,6 +166,7 @@ function appendLexemes(name, val) {
 		}
 	}
 
+	//if parens are backwards, then the expression is invalid
 	if (parenStack < 0) {
 		invalid = true;
 	}
@@ -174,6 +185,7 @@ function appendLexemes(name, val) {
 
 //match l r parens,
 //check for double opperations, and fail
+//check for operators that are next to each other
 function errorLog() {
 	if (parenStack != 0) {
 		invalid = true;
@@ -214,7 +226,6 @@ function ExpressionParser() {
 	//go through the lexemes assigning values and operators
 	for (var i = 0; i < lexemes.length; i++) {
 		var loclex = lexemes[i];
-		console.log(mainTree.operator);
 
 		//we're only adding one number at a time, so store it as an unmatch number node by default if its not an opperator.
 		switch (loclex.name) {
@@ -240,22 +251,14 @@ function ExpressionParser() {
 				break;
 
 			case "LPAREN":
-				//updateTree("LPAREN");  //--  something with prec values later forces a new subbranch into the tree. setting next real operator
-				//                            on the trees right then going back op to the main tree and adding the newe operator
-				//															as the parent () +  = + as parent for the new tree... focous on rhs operator managemnet i geuss
-				var nt = JSON.parse(JSON.stringify(nullTree));
-				//temp value becomes carrier for the subtree of this				
-					
-					treeList.push(nt);
-
+				
+				var nt = JSON.parse(JSON.stringify(nullTree));			
+				treeList.push(nt);
 				prevSymbol = "LPAREN";
 				break;
 			case "RPAREN":
-				//updateTree("RPAREN");
-				//prevSymbol = "RPAREN";
 
 				var rpn = mainTree;
-				console.log(treeList[(treeList.length - 1)]);
 	
 				if(rpn.operator != 0){
 					while(rpn.rhs.operator != 0){
@@ -266,8 +269,6 @@ function ExpressionParser() {
 					rpn.lhs = JSON.parse(JSON.stringify(treeList[(treeList.length - 1)]));
 					mainTree.lhs.rhs = JSON.parse(JSON.stringify(numNode));
 				}
-				
-
 
 				treeList.pop();
 				basePar--;
@@ -281,31 +282,22 @@ function ExpressionParser() {
 				break;
 			default:
 				numNode.val = loclex.val;
-			//console.log(loclex.name);
 
 		}
 
 	}
 
 
-
-
-
 	//to put the last number on, travel down the tree to the final null node
-
-	//Alright, this thing...
 	//start at the mainTree, then check if the rhs is a null tree, because were still not on the 
 	//actual null tree, replace it at rnode.rhs.
 	var rnode = mainTree;
-	
 			
-			while(rnode.rhs.operator != 0){
-				rnode = rnode.rhs;
-			}
-			
+	while(rnode.rhs.operator != 0){
+		rnode = rnode.rhs;
+	}	
 
 	rnode.rhs = JSON.parse(JSON.stringify(numNode));
-
 
 	console.log(mainTree);
 
@@ -315,24 +307,21 @@ function ExpressionParser() {
 	//also, this function is inside the expression parser function so that it can access maintree
 	//and numnode as local variables.
 	function updateTree(operator) {
-
+		//check if there are expr in parens or not
 		var workTree = mainTree;
 		if(treeList.length != 0){
 		workTree = treeList[(treeList.length - 1)];
 		}
-		console.log("treeList length" + treeList.length);
 
 		precVal = precedence(workTree.operator, operator);
 
 
 		//JSON.parse(JSON.stringify performs deep copies
 			
-			var mainTreeClone = JSON.parse(JSON.stringify(workTree));
+		var mainTreeClone = JSON.parse(JSON.stringify(workTree));
+
 		if (precVal) {
-			//this makes it so  expr OldOper nmNode  then next num
-			//so that if + is lower prescidence it will be higher on the tree happening later
-			//currently presidence is measured -1, -+ 1,  and */ 2 ect. OOOR inverse prec val?idk
-			//may need to change prec func 
+			
 			var rnode = workTree;
 	
 
@@ -344,15 +333,9 @@ function ExpressionParser() {
 				rnode.lhs = JSON.parse(JSON.stringify(numNode));
 			}
 
-			//if(mainTree.operator == 0 && mainTree.rhs == 0 && mainTree.lhs != 0){
-			//rnode.operator = operator;
-			//rnode.rhs = JSON.parse(JSON.stringify(nullTree));
-			//}
-			//else{
-			//rnode.lhs = JSON.parse(JSON.stringify(numNode));
 			rnode.operator = operator;
 			rnode.rhs = JSON.parse(JSON.stringify(nullTree));
-			//}
+
 		}
 		else {
 			//push the current number to the far right side, then add on top
@@ -375,28 +358,25 @@ function ExpressionParser() {
 			mainTree.operator = operator;
 			mainTree.rhs = JSON.parse(JSON.stringify(nullTree));
 
-			//mainTree.lhs = expresionNode(JSON.parse(JSON.stringify(numNode)), 0 , operator);
-			//operator.rhs = JSON.parse(JSON.stringify(numNode)); ?
-			//TODO if prec value falwse
+		
 		}
 
 	}
 
-	// this is now a boolean statement, if next operator is greater than the root, it returns true
+	//if next operator is greater than the root, it returns true
+	//also returns true for duel powers.
 	function precedence(rootOperator, nextOperator) {
-		// you were right!!!
+
 		if(rootOperator == "POWER" && nextOperator == "POWER"){
 			return true;
 		}
-		//if(nextOperator == "RPAREN"){
-		//	return false;
-		//}
+
 		r = precedenceValFun(rootOperator);
 		n = precedenceValFun(nextOperator);
-		// may need to be flipped to r > n
 		return Boolean(r < n);
 	}
 
+	//values for precedence
 	function precedenceValFun(operator) {
 
 		switch (operator) {
@@ -432,9 +412,7 @@ function ExpressionParser() {
 
 
 function evaluate(treem) {
-	//only number nodes have vals, so check for that
-	//if it does, return the number.
-	//if it doesnt send the left and right hand sides for their number 
+
 	if (treem.hasOwnProperty('val')) {
 		return treem.val;
 	} else {
@@ -462,6 +440,8 @@ function exprApp(l, r, op) {
 }
 
 /**********************End Expression Evaluator*************/
+
+//empties everything
 function clearFun() {
 	exp = "";
 	ans = 0.0
@@ -470,6 +450,7 @@ function clearFun() {
 	console.log(exp);
 }
 
+//adds onto the string.
 function appendFun(val) {
 	exp += val;
 	document.getElementById("display").innerHTML = exp;
